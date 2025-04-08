@@ -308,71 +308,97 @@ export class Storage extends Service {
      * @throws {AppwriteException}
      * @returns {URL}
     */
-    getFilePreview(bucketId: string, fileId: string, width?: number, height?: number, gravity?: ImageGravity, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: ImageFormat): URL {
-        if (typeof bucketId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "bucketId"');
-        }
-
-        if (typeof fileId === 'undefined') {
-            throw new AppwriteException('Missing required parameter: "fileId"');
-        }
-
-        const apiPath = '/storage/buckets/{bucketId}/files/{fileId}/preview'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
-        const payload: Payload = {};
-
-        if (typeof width !== 'undefined') {
-            payload['width'] = width;
-        }
-
-        if (typeof height !== 'undefined') {
-            payload['height'] = height;
-        }
-
-        if (typeof gravity !== 'undefined') {
-            payload['gravity'] = gravity;
-        }
-
-        if (typeof quality !== 'undefined') {
-            payload['quality'] = quality;
-        }
-
-        if (typeof borderWidth !== 'undefined') {
-            payload['borderWidth'] = borderWidth;
-        }
-
-        if (typeof borderColor !== 'undefined') {
-            payload['borderColor'] = borderColor;
-        }
-
-        if (typeof borderRadius !== 'undefined') {
-            payload['borderRadius'] = borderRadius;
-        }
-
-        if (typeof opacity !== 'undefined') {
-            payload['opacity'] = opacity;
-        }
-
-        if (typeof rotation !== 'undefined') {
-            payload['rotation'] = rotation;
-        }
-
-        if (typeof background !== 'undefined') {
-            payload['background'] = background;
-        }
-
-        if (typeof output !== 'undefined') {
-            payload['output'] = output;
-        }
-
-        const uri = new URL(this.client.config.endpoint + apiPath);
-        payload['project'] = this.client.config.project;
-
-
-        for (const [key, value] of Object.entries(Service.flatten(payload))) {
-            uri.searchParams.append(key, value);
-        }
-        return uri;
+    /**
+ * Get a file preview image. Currently, this method supports preview for image
+ * files (jpg, png, and gif), other supported formats, like pdf, docs, slides,
+ * and spreadsheets, will return the file icon image. You can also pass query
+ * string arguments for cutting and resizing your preview image. Preview is
+ * supported only for image files smaller than 10MB.
+ *
+ * @param {string} bucketId
+ * @param {string} fileId
+ * @param {number} width
+ * @param {number} height
+ * @param {ImageGravity} gravity
+ * @param {number} quality
+ * @param {number} borderWidth
+ * @param {string} borderColor
+ * @param {number} borderRadius
+ * @param {number} opacity
+ * @param {number} rotation
+ * @param {string} background
+ * @param {ImageFormat} output
+ * @throws {AppwriteException}
+ * @returns {Promise<any>}
+*/
+     
+async getFilePreview(bucketId: string, fileId: string, width?: number, height?: number, gravity?: ImageGravity, quality?: number, borderWidth?: number, borderColor?: string, borderRadius?: number, opacity?: number, rotation?: number, background?: string, output?: ImageFormat): Promise<any> {
+    if (typeof bucketId === 'undefined') {
+        throw new AppwriteException('Missing required parameter: "bucketId"');
     }
+
+    if (typeof fileId === 'undefined') {
+        throw new AppwriteException('Missing required parameter: "fileId"');
+    }
+
+    const apiPath = '/storage/buckets/{bucketId}/files/{fileId}/preview'.replace('{bucketId}', bucketId).replace('{fileId}', fileId);
+    const payload: Payload = {};
+
+    if (typeof width !== 'undefined') {
+        payload['width'] = width;
+    }
+
+    if (typeof height !== 'undefined') {
+        payload['height'] = height;
+    }
+
+    if (typeof gravity !== 'undefined') {
+        payload['gravity'] = gravity;
+    }
+
+    if (typeof quality !== 'undefined') {
+        payload['quality'] = quality;
+    }
+
+    if (typeof borderWidth !== 'undefined') {
+        payload['borderWidth'] = borderWidth;
+    }
+
+    if (typeof borderColor !== 'undefined') {
+        payload['borderColor'] = borderColor;
+    }
+
+    if (typeof borderRadius !== 'undefined') {
+        payload['borderRadius'] = borderRadius;
+    }
+
+    if (typeof opacity !== 'undefined') {
+        payload['opacity'] = opacity;
+    }
+
+    if (typeof rotation !== 'undefined') {
+        payload['rotation'] = rotation;
+    }
+
+    if (typeof background !== 'undefined') {
+        payload['background'] = background;
+    }
+
+    if (typeof output !== 'undefined') {
+        payload['output'] = output;
+    }
+
+    const uri = new URL(this.client.config.endpoint + apiPath);
+    payload['project'] = this.client.config.project;
+
+    for (const [key, value] of Object.entries(Service.flatten(payload))) {
+        uri.searchParams.append(key, value);
+    }
+    
+    return this.client.call('get', uri, {
+        'content-type': 'application/json',
+    }, payload, 'arraybuffer');
+}
 
     /**
      * Get a file content by its unique ID. This endpoint is similar to the
